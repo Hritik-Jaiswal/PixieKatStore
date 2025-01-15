@@ -9,14 +9,20 @@ export default function HoKOrderSummaryPage() {
 
   // Get order details from URL parameters
   const gameId = searchParams.get('gameId');
-  const packId = searchParams.get('packId');
+  const serverId = searchParams.get('serverId');
+  const serverName = searchParams.get('serverName');
+  
+  // Get selected packs from URL
+  const packIds = searchParams.getAll('packId');
+  const packNames = searchParams.getAll('packName');
+  const packPrices = searchParams.getAll('packPrice');
 
-  // Mock data for selected pack (replace with actual data from your API/database)
-  const selectedPack = {
-    id: packId,
-    name: '100 Vouchers',
-    price: 19.99,
-  };
+  // Create array of selected packs
+  const selectedPacks = packIds.map((id, index) => ({
+    id,
+    name: packNames[index],
+    price: parseInt(packPrices[index])
+  }));
 
   // Mock user data (replace with actual user data from your auth system)
   const userInfo = {
@@ -32,7 +38,7 @@ export default function HoKOrderSummaryPage() {
     router.back();
   };
 
-  if (!gameId || !packId) {
+  if (!gameId || !packIds.length) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
@@ -53,7 +59,7 @@ export default function HoKOrderSummaryPage() {
     <OrderSummary
       gameType="hok"
       gameId={gameId}
-      selectedPack={selectedPack}
+      selectedPacks={selectedPacks}
       userInfo={userInfo}
       onProceed={handleProceedToPayment}
       onEdit={handleEditOrder}

@@ -68,13 +68,17 @@ const HoKTopUp = () => {
       return;
     }
 
-    // Get the first selected item for the order summary
-    const selectedPack = selectedItems[0];
-    
-    // Build the URL with query parameters
-    const params = new URLSearchParams({
-      gameId,
-      packId: selectedPack.id
+    // Build the URL with query parameters for multiple items
+    const params = new URLSearchParams();
+    params.append('gameId', gameId);
+    params.append('serverId', 'global'); // HoK uses a global server
+    params.append('serverName', 'Global Server');
+
+    // Add each selected item to the params
+    selectedItems.forEach(item => {
+      params.append('packId', item.id);
+      params.append('packName', item.name || `${item.amount} Tokens`);
+      params.append('packPrice', item.price.toString());
     });
     
     router.push(`/games/honor-of-kings/order-summary?${params.toString()}`);

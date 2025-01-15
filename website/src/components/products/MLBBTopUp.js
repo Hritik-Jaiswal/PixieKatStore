@@ -86,15 +86,17 @@ const MLBBTopUp = () => {
       return;
     }
 
-    // Get the first selected item for the order summary
-    const selectedPack = selectedItems[0];
-    
-    // Build the URL with query parameters
-    const params = new URLSearchParams({
-      gameId,
-      serverId,
-      serverName: 'Server Name', // This will be replaced with actual server name from API
-      packId: selectedPack.id
+    // Build the URL with query parameters for multiple items
+    const params = new URLSearchParams();
+    params.append('gameId', gameId);
+    params.append('serverId', serverId);
+    params.append('serverName', 'Server Name'); // This will be replaced with actual server name from API
+
+    // Add each selected item to the params
+    selectedItems.forEach(item => {
+      params.append('packId', item.id);
+      params.append('packName', item.name || `${item.amount} Diamonds`);
+      params.append('packPrice', item.price.toString());
     });
     
     router.push(`/games/mobile-legends/order-summary?${params.toString()}`);
