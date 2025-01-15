@@ -87,7 +87,7 @@ export default function PaymentPage() {
 
   return (
     <div className="min-h-screen py-12 px-4 bg-gradient-to-br from-[#1a103c] to-[#2d0808]">
-      <div className="max-w-4xl mx-auto">
+      <div className="max-w-4xl mt-8 pt-8 mx-auto">
         {/* Header */}
         <div className="text-center mb-8">
           <h1 className="text-3xl font-bold text-white mb-2">Payment</h1>
