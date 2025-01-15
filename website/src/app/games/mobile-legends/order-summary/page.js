@@ -30,8 +30,17 @@ export default function MLBBOrderSummaryPage() {
   };
 
   const handleProceedToPayment = async () => {
-    // Add your payment processing logic here
-    router.push('/checkout/payment');
+    // Calculate total amount
+    const totalAmount = selectedPacks.reduce((total, pack) => total + pack.price, 0);
+
+    // Build payment URL parameters
+    const params = new URLSearchParams({
+      gameType: 'mlbb',
+      gameId,
+      totalAmount: totalAmount.toString()
+    });
+
+    router.push(`/checkout/payment?${params.toString()}`);
   };
 
   const handleEditOrder = () => {
