@@ -4,15 +4,74 @@ import { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { FaFacebookF, FaGoogle, FaLinkedinIn } from 'react-icons/fa';
+import { useRouter } from 'next/navigation';
+import toast from 'react-hot-toast';
+import { validateName, validateEmail, validatePassword } from '@/lib/validation';
 
 export default function SignupPage() {
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const router = useRouter();
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    password: '',
+  });
+  const [errors, setErrors] = useState({});
+  const [loading, setLoading] = useState(false);
 
-  const handleSubmit = (e) => {
+  const validateForm = () => {
+    const newErrors = {
+      name: validateName(formData.name),
+      email: validateEmail(formData.email),
+      password: validatePassword(formData.password),
+    };
+
+    setErrors(newErrors);
+    return !Object.values(newErrors).some(error => error !== '');
+  };
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+    // Clear error when user starts typing
+    if (errors[name]) {
+      setErrors(prev => ({
+        ...prev,
+        [name]: ''
+      }));
+    }
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Handle signup logic here
+    
+    if (!validateForm()) return;
+    
+    setLoading(true);
+    try {
+      const res = await fetch('/api/auth/signup', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data.error || 'Something went wrong');
+      }
+
+      toast.success('Account created successfully! Please check your email to verify your account.');
+      router.push('/auth/login');
+    } catch (error) {
+      toast.error(error.message);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -64,38 +123,48 @@ export default function SignupPage() {
             <div>
               <input
                 type="text"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
+                name="name"
+                value={formData.name}
+                onChange={handleChange}
                 placeholder="Name"
-                className="w-full px-4 py-3 bg-[#151632] border border-[#2a284d] rounded-lg focus:ring-2 focus:ring-[#ff4d4d] focus:border-[#ff4d4d] text-white placeholder-gray-400"
-                required
+                className={`w-full px-4 py-3 bg-[#151632] border ${errors.name ? 'border-red-500' : 'border-[#2a284d]'} rounded-lg focus:ring-2 focus:ring-[#ff4d4d] focus:border-[#ff4d4d] text-white placeholder-gray-400`}
               />
+              {errors.name && (
+                <p className="mt-1 text-sm text-red-500">{errors.name}</p>
+              )}
             </div>
             <div>
               <input
                 type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                name="email"
+                value={formData.email}
+                onChange={handleChange}
                 placeholder="Email"
-                className="w-full px-4 py-3 bg-[#151632] border border-[#2a284d] rounded-lg focus:ring-2 focus:ring-[#ff4d4d] focus:border-[#ff4d4d] text-white placeholder-gray-400"
-                required
+                className={`w-full px-4 py-3 bg-[#151632] border ${errors.email ? 'border-red-500' : 'border-[#2a284d]'} rounded-lg focus:ring-2 focus:ring-[#ff4d4d] focus:border-[#ff4d4d] text-white placeholder-gray-400`}
               />
+              {errors.email && (
+                <p className="mt-1 text-sm text-red-500">{errors.email}</p>
+              )}
             </div>
             <div>
               <input
                 type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                name="password"
+                value={formData.password}
+                onChange={handleChange}
                 placeholder="Password"
-                className="w-full px-4 py-3 bg-[#151632] border border-[#2a284d] rounded-lg focus:ring-2 focus:ring-[#ff4d4d] focus:border-[#ff4d4d] text-white placeholder-gray-400"
-                required
+                className={`w-full px-4 py-3 bg-[#151632] border ${errors.password ? 'border-red-500' : 'border-[#2a284d]'} rounded-lg focus:ring-2 focus:ring-[#ff4d4d] focus:border-[#ff4d4d] text-white placeholder-gray-400`}
               />
+              {errors.password && (
+                <p className="mt-1 text-sm text-red-500">{errors.password}</p>
+              )}
             </div>
             <button
               type="submit"
-              className="w-full py-3 bg-gradient-to-r from-[#ff4d4d] to-[#ff1a1a] text-white rounded-lg font-semibold hover:opacity-90 transition-opacity shadow-md hover:shadow-lg transform hover:-translate-y-0.5"
+              disabled={loading}
+              className={`w-full py-3 bg-gradient-to-r from-[#ff4d4d] to-[#ff1a1a] text-white rounded-lg font-semibold ${loading ? 'opacity-70 cursor-not-allowed' : 'hover:opacity-90'} transition-opacity shadow-md hover:shadow-lg transform hover:-translate-y-0.5`}
             >
-              SIGN UP
+              {loading ? 'SIGNING UP...' : 'SIGN UP'}
             </button>
           </form>
 

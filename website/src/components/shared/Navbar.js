@@ -4,11 +4,13 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';
+import { useAuth } from '@/contexts/auth';
 
 export default function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const pathname = usePathname();
+  const { user, logout } = useAuth();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -77,20 +79,47 @@ export default function Navbar() {
             >
               Contact
             </Link>
-            <div className="flex items-center space-x-4">
-              <Link
-                href="/auth/login"
-                className="px-6 py-2 text-white hover:text-[#ff4d4d] transition-colors font-medium"
-              >
-                Login
-              </Link>
-              <Link
-                href="/auth/signup"
-                className="px-6 py-2 bg-gradient-to-r from-[#ff4d4d] to-[#ff1a1a] text-white rounded-full font-medium hover:opacity-90 transition-opacity shadow-md hover:shadow-lg transform hover:-translate-y-0.5"
-              >
-                Sign Up
-              </Link>
-            </div>
+            {user ? (
+              <div className="flex items-center space-x-4">
+                <Link 
+                  href="/orders" 
+                  className={`text-white hover:text-[#ff4d4d] transition-colors ${
+                    isActive('/orders') ? 'font-semibold' : ''
+                  }`}
+                >
+                  My Orders
+                </Link>
+                <Link 
+                  href="/account" 
+                  className={`text-white hover:text-[#ff4d4d] transition-colors ${
+                    isActive('/account') ? 'font-semibold' : ''
+                  }`}
+                >
+                  Account
+                </Link>
+                <button
+                  onClick={logout}
+                  className="bg-red-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-red-700 transition-colors"
+                >
+                  Logout
+                </button>
+              </div>
+            ) : (
+              <div className="flex items-center space-x-4">
+                <Link
+                  href="/auth/login"
+                  className="px-6 py-2 text-white hover:text-[#ff4d4d] transition-colors font-medium"
+                >
+                  Login
+                </Link>
+                <Link
+                  href="/auth/signup"
+                  className="px-6 py-2 bg-gradient-to-r from-[#ff4d4d] to-[#ff1a1a] text-white rounded-full font-medium hover:opacity-90 transition-opacity shadow-md hover:shadow-lg transform hover:-translate-y-0.5"
+                >
+                  Sign Up
+                </Link>
+              </div>
+            )}
           </div>
 
           {/* Mobile menu button */}
@@ -147,20 +176,47 @@ export default function Navbar() {
               >
                 Contact
               </Link>
-              <div className="flex flex-col space-y-2 pt-2 border-t border-gray-700">
-                <Link
-                  href="/auth/login"
-                  className="px-6 py-2 text-white hover:text-[#ff4d4d] transition-colors font-medium"
-                >
-                  Login
-                </Link>
-                <Link
-                  href="/auth/signup"
-                  className="px-6 py-2 bg-gradient-to-r from-[#ff4d4d] to-[#ff1a1a] text-white rounded-full font-medium hover:opacity-90 transition-opacity text-center"
-                >
-                  Sign Up
-                </Link>
-              </div>
+              {user ? (
+                <div className="flex flex-col space-y-2 pt-2 border-t border-gray-700">
+                  <Link 
+                    href="/orders" 
+                    className={`text-white hover:text-[#ff4d4d] transition-colors ${
+                      isActive('/orders') ? 'font-semibold' : ''
+                    }`}
+                  >
+                    My Orders
+                  </Link>
+                  <Link 
+                    href="/account" 
+                    className={`text-white hover:text-[#ff4d4d] transition-colors ${
+                      isActive('/account') ? 'font-semibold' : ''
+                    }`}
+                  >
+                    Account
+                  </Link>
+                  <button
+                    onClick={logout}
+                    className="bg-red-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-red-700 transition-colors"
+                  >
+                    Logout
+                  </button>
+                </div>
+              ) : (
+                <div className="flex flex-col space-y-2 pt-2 border-t border-gray-700">
+                  <Link
+                    href="/auth/login"
+                    className="px-6 py-2 text-white hover:text-[#ff4d4d] transition-colors font-medium"
+                  >
+                    Login
+                  </Link>
+                  <Link
+                    href="/auth/signup"
+                    className="px-6 py-2 bg-gradient-to-r from-[#ff4d4d] to-[#ff1a1a] text-white rounded-full font-medium hover:opacity-90 transition-opacity text-center"
+                  >
+                    Sign Up
+                  </Link>
+                </div>
+              )}
             </div>
           </div>
         )}
